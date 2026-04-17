@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import NotificationPanel from '@/components/NotificationPanel';
 import Siren from '@/components/Siren';
-import { API_URL } from '@/config/api';
+import { API_URL, API_CONFIG } from '@/config/api';
 
 interface Notification {
   id: number;
@@ -60,11 +60,20 @@ export default function Home() {
     // Siren component handles this
   };
 
-  useEffect(() => {
+useEffect(() => {
     // Initial fetch
-     
     fetchNotifications();
     
+    // Set up polling if configured (fallback in case IPC push fails)
+    let pollInterval: NodeJS.Timeout | null = null;
+    if (API_CONFIG.POLL_INTERVAL > 0) {
+      pollInterval = setInterval(() => {
+        console.log('Polling for new notifications...');
+        fetchNotifications();
+      }, API_CONFIG.POLL_INTERVAL);
+    }
+    
+    // Listen for IPC push notifications
     if (typeof window !== 'undefined' && window.electronAPI) {
       window.electronAPI.onNewNotification((notification: Notification) => {
         setNotifications(prev => {
@@ -80,6 +89,13 @@ export default function Home() {
         fetchNotifications();
       });
     }
+    
+    // Cleanup on unmount
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

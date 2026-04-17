@@ -13,8 +13,8 @@ export const API_CONFIG = {
   ENDPOINT: '/api/notifications',
   
   // Poll interval in milliseconds (5000 = 5 seconds)
-  // Set to 0 for push mode (no polling)
-  POLL_INTERVAL: 0,
+  // Set to 0 for push mode only, or > 0 for polling fallback
+  POLL_INTERVAL: 60000,
 };
 
 // Full API URL - don't change this
