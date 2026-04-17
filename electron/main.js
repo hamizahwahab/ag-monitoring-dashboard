@@ -149,22 +149,32 @@ function startHttpServer() {
     
     // GET /api/notifications/:id - Get notification by ID
     if (req.method === 'GET' && url.startsWith('/api/notifications/')) {
-      const id = parseInt(url.split('/api/notifications/')[1]);
-      const results = db.exec(`SELECT * FROM notifications WHERE id = ${id}`);
+      const idStr = url.split('/api/notifications/')[1];
+      const id = parseInt(idStr);
       
-      if (results.length === 0 || results[0].values.length === 0) {
+      // Validate ID is a positive integer
+      if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid ID' }));
+        return;
+      }
+      
+      const stmt = db.prepare('SELECT * FROM notifications WHERE id = ?');
+      stmt.bind([id]);
+      const results = [];
+      while (stmt.step()) {
+        results.push(stmt.getAsObject());
+      }
+      stmt.free();
+      
+      if (results.length === 0) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Notification not found' }));
         return;
       }
       
-      const columns = results[0].columns;
-      const row = results[0].values[0];
-      const notification = {};
-      columns.forEach((col, i) => notification[col] = row[i]);
-      
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(notification));
+      res.end(JSON.stringify(results[0]));
       return;
     }
     
@@ -180,9 +190,17 @@ function startHttpServer() {
         try {
           const notification = JSON.parse(body);
           
+          // Validate required fields
           if (!notification.title || !notification.message) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Missing title or message' }));
+            return;
+          }
+          
+          // Validate max length (prevent buffer overflow)
+          if (notification.title.length > 200 || notification.message.length > 1000) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Title or message too long' }));
             return;
           }
           
@@ -223,23 +241,29 @@ function startHttpServer() {
     
     // DELETE /api/notifications/:id - Delete specific notification
     if (req.method === 'DELETE' && url.startsWith('/api/notifications/')) {
-      const id = parseInt(url.split('/api/notifications/')[1]);
+      const idStr = url.split('/api/notifications/')[1];
+      const id = parseInt(idStr);
       
-      if (isNaN(id)) {
+      // Validate ID is a positive integer
+      if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Invalid ID' }));
         return;
       }
       
-      // Check if notification exists
-      const checkResult = db.exec(`SELECT id FROM notifications WHERE id = ${id}`);
-      if (checkResult.length === 0 || checkResult[0].values.length === 0) {
+      // Check if notification exists (using prepared statement)
+      const checkStmt = db.prepare('SELECT id FROM notifications WHERE id = ?');
+      checkStmt.bind([id]);
+      const exists = checkStmt.step();
+      checkStmt.free();
+      
+      if (!exists) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Notification not found' }));
         return;
       }
       
-      // Delete and check if successful
+      // Delete and save
       db.run('DELETE FROM notifications WHERE id = ?', [id]);
       const changes = db.getRowsModified();
       
