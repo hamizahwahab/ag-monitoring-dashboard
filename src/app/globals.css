@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --asg-bg: #050505;
+  --asg-panel: #0d0d0d;
+  --asg-card: #161616;
+  
+  --critical-bg: #2D0A0A;
+  --critical-border: #FF0000;
+  
+  --warning-bg: #2D1F0A;
+  --warning-border: #FFB800;
+  
+  --info-bg: #0A1A2D;
+  --info-border: #3B82F6;
+}
+
+@theme inline {
+  --color-background: var(--asg-bg);
+  --color-foreground: #ededed;
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--asg-bg);
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar for Infinite Scroll Sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
+/* TV Optimization: Prevent text blurring on large screens */
+* {
+  text-rendering: optimizeLegibility;
+}
+
+.notification-card {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 3px solid;
+}
+
+.notification-card.critical {
+  background-color: var(--critical-bg);
+  border-color: var(--critical-border);
+}
+
+.notification-card.warning {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+.notification-card.info {
+  background-color: var(--info-bg);
+  border-color: var(--info-border);
+}
