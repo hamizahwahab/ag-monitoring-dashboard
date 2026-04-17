@@ -128,22 +128,28 @@ function startHttpServer() {
     
     // GET /api/notifications - Get all notifications
     if (req.method === 'GET' && url === '/api/notifications') {
-      const results = db.exec('SELECT * FROM notifications ORDER BY created_at DESC');
-      if (results.length === 0) {
+      try {
+        const results = db.exec('SELECT * FROM notifications ORDER BY created_at DESC');
+        if (results.length === 0) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify([]));
+          return;
+        }
+        
+        const columns = results[0].columns;
+        const notifications = results[0].values.map(row => {
+          const obj = {};
+          columns.forEach((col, i) => obj[col] = row[i]);
+          return obj;
+        });
+        
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify([]));
-        return;
+        res.end(JSON.stringify(notifications));
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to fetch notifications' }));
       }
-      
-      const columns = results[0].columns;
-      const notifications = results[0].values.map(row => {
-        const obj = {};
-        columns.forEach((col, i) => obj[col] = row[i]);
-        return obj;
-      });
-      
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(notifications));
       return;
     }
     
@@ -159,22 +165,28 @@ function startHttpServer() {
         return;
       }
       
-      const stmt = db.prepare('SELECT * FROM notifications WHERE id = ?');
-      stmt.bind([id]);
-      const results = [];
-      while (stmt.step()) {
-        results.push(stmt.getAsObject());
+      try {
+        const stmt = db.prepare('SELECT * FROM notifications WHERE id = ?');
+        stmt.bind([id]);
+        const results = [];
+        while (stmt.step()) {
+          results.push(stmt.getAsObject());
+        }
+        stmt.free();
+        
+        if (results.length === 0) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Notification not found' }));
+          return;
+        }
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(results[0]));
+      } catch (err) {
+        console.error('Error fetching notification:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to fetch notification' }));
       }
-      stmt.free();
-      
-      if (results.length === 0) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Notification not found' }));
-        return;
-      }
-      
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(results[0]));
       return;
     }
     
@@ -226,16 +238,22 @@ function startHttpServer() {
     
     // DELETE /api/notifications - Clear all notifications
     if (req.method === 'DELETE' && url === '/api/notifications') {
-      db.run('DELETE FROM notifications');
-      saveDatabase();
-      
-      // Notify renderer to refresh
-      if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('notification:refresh');
+      try {
+        db.run('DELETE FROM notifications');
+        saveDatabase();
+        
+        // Notify renderer to refresh
+        if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('notification:refresh');
+        }
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'All notifications cleared' }));
+      } catch (err) {
+        console.error('Error clearing notifications:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to clear notifications' }));
       }
-      
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, message: 'All notifications cleared' }));
       return;
     }
     
@@ -252,32 +270,38 @@ function startHttpServer() {
       }
       
       // Check if notification exists (using prepared statement)
-      const checkStmt = db.prepare('SELECT id FROM notifications WHERE id = ?');
-      checkStmt.bind([id]);
-      const exists = checkStmt.step();
-      checkStmt.free();
-      
-      if (!exists) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Notification not found' }));
-        return;
-      }
-      
-      // Delete and save
-      db.run('DELETE FROM notifications WHERE id = ?', [id]);
-      const changes = db.getRowsModified();
-      
-      if (changes > 0) {
-        saveDatabase();
+      try {
+        const checkStmt = db.prepare('SELECT id FROM notifications WHERE id = ?');
+        checkStmt.bind([id]);
+        const exists = checkStmt.step();
+        checkStmt.free();
         
-        // Notify renderer to refresh
-        if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('notification:refresh');
+        if (!exists) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Notification not found' }));
+          return;
         }
         
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, message: `Notification ${id} deleted` }));
-      } else {
+        // Delete and save
+        db.run('DELETE FROM notifications WHERE id = ?', [id]);
+        const changes = db.getRowsModified();
+        
+        if (changes > 0) {
+          saveDatabase();
+          
+          // Notify renderer to refresh
+          if (mainWindow && mainWindow.webContents && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('notification:refresh');
+          }
+          
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true, message: `Notification ${id} deleted` }));
+        } else {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Failed to delete notification' }));
+        }
+      } catch (err) {
+        console.error('Error deleting notification:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Failed to delete notification' }));
       }
