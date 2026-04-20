@@ -54,7 +54,7 @@ async function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       message TEXT NOT NULL,
-      priority TEXT DEFAULT 'info',
+      priority TEXT DEFAULT 'critical',
       status TEXT DEFAULT 'active',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
