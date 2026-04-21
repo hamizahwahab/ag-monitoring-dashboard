@@ -38,13 +38,6 @@ export default function Home() {
         newNotifications = data;
       }
       
-      // Check for new notifications (for siren)
-      const hasNewNotifications = newNotifications.some(n => !lastFetchedIds.current.has(n.id));
-      
-      if (hasNewNotifications && notifications.length > 0) {
-        playSiren();
-      }
-      
       // Update last fetched IDs
       newNotifications.forEach(n => lastFetchedIds.current.add(n.id));
       
@@ -53,11 +46,6 @@ export default function Home() {
     } catch (err) {
       console.log('Fetching notifications:', err);
     }
-  };
-
-  // Play siren sound
-  const playSiren = () => {
-    // Siren component handles this
   };
 
 useEffect(() => {
