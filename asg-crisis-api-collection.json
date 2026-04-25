@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "ASG Crisis API",
+    "description": "Postman collection for testing the Crisis API endpoints in ASG Monitoring Dashboard.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Crisis",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Database outage\",\"description\":\"Primary database cluster is unavailable\",\"severity\":\"high\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/crises",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "crises"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Active Crises",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/crises",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "crises"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Resolve Crisis",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/api/crises/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "crises",
+            "1"
+          ]
+        },
+        "description": "Replace '1' with the crisis ID to resolve."
+      }
+    }
+  ]
+}

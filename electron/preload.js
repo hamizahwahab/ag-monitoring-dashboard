@@ -15,4 +15,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.removeAllListeners('notification:new');
     ipcRenderer.removeAllListeners('notification:refresh');
   },
-});
+  getCrises: () => ipcRenderer.invoke('db:getCrises'),
+  addCrisis: (crisis) => ipcRenderer.invoke('db:addCrisis', crisis),
+  deleteCrisis: (id) => ipcRenderer.invoke('db:deleteCrisis', id),
+  onNewCrisis: (callback) => {
+    ipcRenderer.on('crisis:new', (event, crisis) => callback(crisis));
+  },
+  onRefreshCrises: (callback) => {
+    ipcRenderer.on('crisis:refresh', () => callback());
+  },
+  removeNewCrisisListener: () => {
+    ipcRenderer.removeAllListeners('crisis:new');
+    ipcRenderer.removeAllListeners('crisis:refresh');
+  },

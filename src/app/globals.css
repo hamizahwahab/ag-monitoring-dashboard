@@ -50,7 +50,7 @@ body {
 }
 
 .notification-card {
-  padding: 16px;
+  padding: 16px 0;
   border-radius: 8px;
   margin-bottom: 12px;
   border-left: 3px solid;

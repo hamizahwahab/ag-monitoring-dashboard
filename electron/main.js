@@ -11,6 +11,16 @@ let dbPath;
 // Check if running in dev mode (passed via command line)
 const isDevMode = process.argv.includes('--dev');
 const HTTP_PORT = 8001;
+const API_KEY = process.env.API_KEY || 'ASG-DASHBOARD-2024'; // Use env var or default
+
+// Helper to check API key
+function isValidApiKey(req) {
+  // Allow all requests in dev mode
+  if (isDevMode) return true;
+  
+  const apiKey = req.headers['x-api-key'];
+  return apiKey === API_KEY;
+}
 
 async function createWindow() {
   mainWindow = new BrowserWindow({
@@ -259,6 +269,13 @@ function startHttpServer() {
     
     // POST /api/notifications - Add new notification
     if (req.method === 'POST' && url === '/api/notifications') {
+      // Check API key
+      if (!isValidApiKey(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+        return;
+      }
+      
       let body = '';
       
       req.on('data', chunk => {
@@ -305,6 +322,13 @@ function startHttpServer() {
 
     // POST /api/crises - Add new crisis
     if (req.method === 'POST' && url === '/api/crises') {
+      // Check API key
+      if (!isValidApiKey(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+        return;
+      }
+      
       let body = '';
       
       req.on('data', chunk => {
@@ -343,6 +367,13 @@ function startHttpServer() {
 
         // DELETE /api/crises/:id - Resolve specific crisis
     if (req.method === 'DELETE' && url.startsWith('/api/crises/')) {
+      // Check API key
+      if (!isValidApiKey(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+        return;
+      }
+      
       const idStr = url.split('/api/crises/')[1];
       const id = parseInt(idStr);
       
@@ -372,6 +403,13 @@ function startHttpServer() {
 
     // DELETE /api/notifications - Clear all notifications
     if (req.method === 'DELETE' && url === '/api/notifications') {
+      // Check API key
+      if (!isValidApiKey(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+        return;
+      }
+      
       try {
         db.run('DELETE FROM notifications');
         saveDatabase();
@@ -393,6 +431,13 @@ function startHttpServer() {
     
     // DELETE /api/notifications/:id - Delete specific notification
     if (req.method === 'DELETE' && url.startsWith('/api/notifications/')) {
+      // Check API key
+      if (!isValidApiKey(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+        return;
+      }
+      
       const idStr = url.split('/api/notifications/')[1];
       const id = parseInt(idStr);
       

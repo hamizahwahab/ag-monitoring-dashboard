@@ -9,13 +9,15 @@ export const API_CONFIG = {
   // - Friend sends to YOUR IP: 'http://YOUR_PC_IP:8001'
   BASE_URL: 'http://localhost:8001',
   
-  // Endpoint path
+  // Endpoint paths
   ENDPOINT: '/api/notifications',
+  CRISIS_ENDPOINT: '/api/crises',
   
   // Poll interval in milliseconds (5000 = 5 seconds)
   // Set to 0 for push mode only, or > 0 for polling fallback
   POLL_INTERVAL: 60000,
 };
 
-// Full API URL - don't change this
-export const API_URL = API_CONFIG.BASE_URL + API_CONFIG.ENDPOINT;
+// Full API URLs - don't change this
+export const API_URL = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINT}`;
+export const CRISIS_API_URL = `${API_CONFIG.BASE_URL}${API_CONFIG.CRISIS_ENDPOINT}`;
