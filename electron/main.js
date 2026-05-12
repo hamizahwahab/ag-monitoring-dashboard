@@ -473,6 +473,18 @@ return;
         }
         
         try {
+          // Check if crisis exists
+          const checkStmt = db.prepare('SELECT id FROM crises WHERE id = ?');
+          checkStmt.bind([id]);
+          const exists = checkStmt.step();
+          checkStmt.free();
+          
+          if (!exists) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Crisis not found' }));
+            return;
+          }
+          
           db.run('UPDATE crises SET status = \'resolved\' WHERE id = ?', [id]);
           saveDatabase();
           
@@ -518,7 +530,7 @@ return;
       return;
     }
     
-    // DELETE /api/notifications - Clear all notifications
+    // DELETE /api/notifications/all - Clear all notifications
     if (req.method === 'DELETE' && url === '/api/notifications/all') {
       // Check API key
       if (!isValidApiKey(req)) {
