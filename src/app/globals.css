@@ -70,3 +70,21 @@ body {
   background-color: var(--info-bg);
   border-color: var(--info-border);
 }
+
+/* Vertical carousel for notifications */
+.notification-carousel {
+  animation: scroll-vertical 40s linear infinite;
+}
+
+.notification-carousel:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-vertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
