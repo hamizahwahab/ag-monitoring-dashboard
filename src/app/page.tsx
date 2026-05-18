@@ -102,10 +102,8 @@ useEffect(() => {
     // Listen for IPC push notifications
     if (typeof window !== 'undefined' && window.electronAPI) {
       window.electronAPI.onNewNotification((notification: Notification) => {
-        console.log('[IPC] Received notification:new', notification.id);
         setNotifications(prev => {
           if (prev.some(n => n.id === notification.id)) {
-            console.log('[IPC] Duplicate notification, skipping');
             return prev;
           }
           playSiren();
@@ -114,16 +112,13 @@ useEffect(() => {
       });
       
       window.electronAPI.onRefreshNotifications(() => {
-        console.log('[IPC] Received notification:refresh');
         fetchNotifications();
       });
 
       // Listen for IPC push crises
       (window.electronAPI as any).onNewCrisis((crisis: Crisis) => {
-        console.log('[IPC] Received crisis:new', crisis.id);
         setCrises(prev => {
           if (prev.some(c => c.id === crisis.id)) {
-            console.log('[IPC] Duplicate crisis, skipping');
             return prev;
           }
           playSiren();
@@ -132,7 +127,6 @@ useEffect(() => {
       });
       
       (window.electronAPI as any).onRefreshCrises(() => {
-        console.log('[IPC] Received crisis:refresh');
         fetchCrises();
       });
     }
