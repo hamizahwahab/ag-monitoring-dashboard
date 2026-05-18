@@ -8,10 +8,12 @@ export default function NotificationPanel({ notifications }: NotificationPanelPr
   const duplicatedNotifications = [...notifications, ...notifications];
 
   return (
-    <div className="h-full py-4 px-0 bg-[#0d0d0d]">
-      <h2 className="text-lg font-bold text-white/70 mb-4 border-b border-white/10 pb-2 px-2">
-        NOTIFICATION
-      </h2>
+    <div className="h-full bg-[#0d0d0d]">
+      <div className="px-3 py-3 border-b border-white/10">
+        <h2 className="text-base font-bold text-white/70">
+          NOTIFICATION
+        </h2>
+      </div>
       
       <div className="overflow-hidden h-[calc(100%-50px)]">
         {notifications.length === 0 ? (

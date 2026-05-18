@@ -6,14 +6,17 @@ import { CrisisPanelProps } from '@/types';
 export default function CrisisPanel({ crises }: CrisisPanelProps) {
   return (
     <div className="h-full flex flex-col bg-[#0d0d0d] border-r border-white/10 shadow-[5px_0_30px_rgba(0,0,0,0.5)]">
-      <div className="p-4 border-b border-white/10 bg-red-950/20">
-        <h2 className="text-lg font-bold text-red-500 flex items-center gap-2">
+      <div className="px-3 py-3 border-b border-white/10">
+        <h2 className="text-base font-bold text-red-500 flex items-center gap-2">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
           </span>
           ACTIVE CRISES
         </h2>
+        <div className="text-[10px] text-white/40 mt-0.5">
+          {crises.length} active
+        </div>
       </div>
       
       <div className="flex-1 py-4 px-0 space-y-3">

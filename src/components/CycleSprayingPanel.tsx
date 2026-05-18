@@ -50,9 +50,11 @@ export default function CycleSprayingPanel() {
 
   return (
     <div className="h-full flex flex-col bg-[#0a0a0a] p-3">
-      <h2 className="text-base font-bold text-white/70 mb-3 border-b border-white/10 pb-2">
-        CYCLE SPRAYING
-      </h2>
+      <div className="px-3 py-3 border-b border-white/10">
+        <h2 className="text-base font-bold text-white/70">
+          CYCLE SPRAYING
+        </h2>
+      </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2">
         {/* Overdue section (red) */}
