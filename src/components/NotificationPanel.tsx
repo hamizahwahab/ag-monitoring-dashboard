@@ -8,7 +8,7 @@ export default function NotificationPanel({ notifications }: NotificationPanelPr
   const duplicatedNotifications = [...notifications, ...notifications];
 
   return (
-    <div className="h-full bg-[#0d0d0d]">
+    <div className="h-full bg-tv-panel">
       <div className="px-3 py-3 border-b border-white/10">
         <h2 className="text-base font-bold text-white/70">
           NOTIFICATION

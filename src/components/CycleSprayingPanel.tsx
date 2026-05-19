@@ -49,7 +49,7 @@ export default function CycleSprayingPanel() {
   const pending = plots.filter(p => p.status === 'pending');
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a0a]">
+    <div className="h-full flex flex-col bg-tv-panel">
       <div className="px-3 py-3 border-b border-white/10">
         <h2 className="text-base font-bold text-white/70">
           CYCLE SPRAYING

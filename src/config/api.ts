@@ -15,7 +15,7 @@ export const API_CONFIG = {
   
   // Poll interval in milliseconds (5000 = 5 seconds)
   // Set to 0 for push mode only, or > 0 for polling fallback
-  POLL_INTERVAL: 60000,
+  POLL_INTERVAL: 30000,
 };
 
 // Full API URLs - don't change this

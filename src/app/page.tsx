@@ -145,12 +145,12 @@ useEffect(() => {
   }, []);
 
   return (
-    <main className="flex flex-col h-screen bg-[#050505] text-white overflow-hidden select-none">
+    <main className="flex flex-col h-screen bg-[var(--tv-bg)] text-white overflow-hidden select-none">
       
       <div className="flex flex-1 overflow-hidden">
         {/* CRISIS SIDEBAR (Left) - hidden when no crises */}
         {crises.length > 0 && (
-          <aside className="w-[25%] flex flex-col bg-[#0d0d0d] border-r border-white/3 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
+          <aside className="w-[25%] flex flex-col bg-tv-panel border-r border-white/3 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
             <CrisisPanel crises={crises} onResolveCrisis={onResolveCrisis} />
           </aside>
         )}
@@ -161,7 +161,7 @@ useEffect(() => {
         </div>
         
         {/* NOTIFICATION SIDEBAR (Right 25%) */}
-        <aside className="w-[25%] flex flex-col bg-[#0d0d0d] border-l border-white/3 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+        <aside className="w-[25%] flex flex-col bg-tv-panel border-l border-white/3 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
           <NotificationPanel notifications={notifications} />
         </aside>
       </div>

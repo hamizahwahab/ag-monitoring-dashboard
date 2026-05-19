@@ -5,7 +5,7 @@ import { CrisisPanelProps } from '@/types';
 
 export default function CrisisPanel({ crises }: CrisisPanelProps) {
   return (
-    <div className="h-full flex flex-col bg-[#0d0d0d] border-r border-white/10 shadow-[5px_0_30px_rgba(0,0,0,0.5)]">
+    <div className="h-full flex flex-col bg-tv-panel border-r border-white/10 shadow-[5px_0_30px_rgba(0,0,0,0.5)]">
       <div className="px-3 py-3 border-b border-white/10">
         <h2 className="text-base font-bold text-red-500 flex items-center gap-2">
           <span className="relative flex h-3 w-3">
